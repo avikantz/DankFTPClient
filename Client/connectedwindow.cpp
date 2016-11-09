@@ -4,8 +4,8 @@
 
 ConnectedWindow::ConnectedWindow(server_info serv, QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::ConnectedWindow)
-{
+    ui(new Ui::ConnectedWindow) {
+
 	is_playing = false;
 	is_destroyed = true;
 	s_info = serv;
@@ -17,8 +17,9 @@ ConnectedWindow::ConnectedWindow(server_info serv, QWidget *parent) :
 
 	// Actions
 	connect(ui->actionDisconnect, SIGNAL(triggered(bool)), this, SLOT(kill_client()));
-	connect(ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(list_music()));
-	connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(fetch_music(QModelIndex)));
+    connect(ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(list_files()));
+    connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(fetch_file(QModelIndex)));
+    connect(ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(lookup_file(QModelIndex)));
 	connect(ui->pauseButton, SIGNAL(clicked(bool)), this, SLOT(change_state()));
 	connect(ui->stopButton, SIGNAL(clicked(bool)), this, SLOT(stop_music()));
 	connect(ui->uploadButton, SIGNAL(clicked(bool)), this, SLOT(open_file_browser()));
@@ -27,19 +28,23 @@ ConnectedWindow::ConnectedWindow(server_info serv, QWidget *parent) :
 	ui->playedProgress->setValue(0);
 	ui->playedProgress->setTextVisible(false);
 	ui->progressBar->hide();
-	list_music();
+
+    ui->pauseButton->hide();
+    ui->stopButton->hide();
+    ui->playedProgress->hide();
+
+    list_files();
 }
 
 ConnectedWindow::~ConnectedWindow()
 {
-	delete ui;
+    delete ui;
 }
 
 void ConnectedWindow::open_file_browser()
 {
-	QString file_name = QFileDialog::getOpenFileName(this, tr("Open File"),"~");
-	qDebug() << "File selected " << file_name;
-	// fileName has entire file path, upload this to server, might have to change name
+    QString file_name = QFileDialog::getOpenFileName(this, tr("Open File"), "~");
+    qDebug() << "File to upload: " << file_name;
 
 	_control ctrl;
 	ctrl.command = FUPLOAD;
@@ -48,7 +53,7 @@ void ConnectedWindow::open_file_browser()
 
 	int file_name_starts_at = file_name.lastIndexOf("/");
 	QString file_name_to_send = file_name.mid(file_name_starts_at + 1);
-	qDebug() << "File name " << file_name_to_send;
+    qDebug() << "Sending file: " << file_name_to_send;
 
 	int i;
 	char filename[NAME_SIZE];
@@ -70,10 +75,10 @@ void ConnectedWindow::open_file_browser()
 		}
 		char flush[10];
 		::send(s_info.sockfd, flush, 10, 0);
-		qDebug() << "File sent";
+        qDebug() << "File uploaded :O";
 	}
 	else {
-		qDebug() << "LOL";
+        qDebug() << "Unable to send :(";
 	}
 }
 
@@ -136,7 +141,7 @@ void ConnectedWindow::updatebar() {
 }
 
 void ConnectedWindow::change_bar(int seconds) {
-	// qDebug() << "Seconds: " << seconds;
+
 	int total = player->duration()/1000;
 	float percentage = (float)seconds/total;
 
@@ -224,13 +229,55 @@ int ConnectedWindow::download_file(QString fname)
 void ConnectedWindow::save_file(QString fname) {
 	QString mediaPath = qApp->applicationDirPath().append("/transfers/");
 	mediaPath.append(fname);
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), mediaPath);
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save As..."), mediaPath);
     qDebug() << "Filename = " << fileName;
     QFile::copy(mediaPath, fileName);
 }
 
-void ConnectedWindow::fetch_music(QModelIndex index)
-{
+void ConnectedWindow::open_file(QString fname) {
+    QString mediaPath = qApp->applicationDirPath().append("/transfers/");
+    mediaPath.append(fname);
+    QDesktopServices::openUrl(QUrl::fromLocalFile(mediaPath));
+}
+
+void ConnectedWindow::lookup_file(QModelIndex index) {
+
+    if(!is_destroyed) {
+        stop_music();
+    }
+
+    QString file_name = index.data().toString();
+    QString message(file_name);
+    message.prepend("Selected: ");
+    ui->statusbar->showMessage(message);
+
+    _control ctrl;
+    ctrl.command = REQ_FILE;
+    ctrl.is_error = 0;
+    send(s_info.sockfd, (_control *)&ctrl, sizeof(_control), 0);
+    int is_downloaded = download_file(file_name);
+    if(is_downloaded == -1) {
+        QMessageBox::information(0, "Error", "Could not open file!");
+    } else {
+        QString ext = file_name.right(3);
+        qDebug() << "Extension: " << ext;
+        if ((QString::compare("mp3", ext) == 0) || (QString::compare("m4a", ext)) == 0) {
+            // Music file
+            ui->pauseButton->show();
+            ui->stopButton->show();
+            ui->playedProgress->show();
+            setup_music_player(file_name);
+        } else {
+            // Other file
+            ui->pauseButton->hide();
+            ui->stopButton->hide();
+            ui->playedProgress->hide();
+        }
+    }
+}
+
+void ConnectedWindow::fetch_file(QModelIndex index) {
+
 	if(!is_destroyed) {
 		stop_music();
 	}
@@ -246,21 +293,14 @@ void ConnectedWindow::fetch_music(QModelIndex index)
     int is_downloaded = download_file(file_name);
 	if(is_downloaded == -1) {
 		QMessageBox::information(0, "Error", "Could not open file!");
-	} else {
-		QString ext = file_name.right(3);
-		qDebug() << "Extension: " << ext;
-        if ((QString::compare("mp3", ext) == 0) || (QString::compare("m4a", ext)) == 0) {
-			qDebug() << "Playing audio file...";
-			setup_music_player(file_name);
-		} else {
-			save_file(file_name);
-		}
+    } else {
+        open_file(file_name);
 	}
 
 }
 
-void ConnectedWindow::list_music()
-{
+void ConnectedWindow::list_files() {
+
 	_control ctrl;
 	ctrl.command = REQ_LIST;
 	ctrl.is_error = 0;
@@ -283,13 +323,13 @@ void ConnectedWindow::list_music()
 	QStringList stringList;
 
 	QFile listing("FileList.txt");
-	if(!listing.open(QIODevice::ReadOnly))
-	{
+    if(!listing.open(QIODevice::ReadOnly)) {
 		QMessageBox::information(0, "Error", listing.errorString());
 	}
 	QTextStream textStream(&listing);
-	while (true)
-	{
+
+    while (YES) {
+
 		QString line = textStream.readLine();
 		if (line.isNull())
 			break;
@@ -310,9 +350,11 @@ void ConnectedWindow::list_music()
 void ConnectedWindow::kill_client() {
 
 	::close(s_info.sockfd);
+
 	EntryWindow *ew = new EntryWindow();
 	ew->show();
 	ew->setWindowTitle("DankFTPClient");
+
 	this->close();
 
 }

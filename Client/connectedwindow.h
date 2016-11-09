@@ -11,6 +11,7 @@
 #include <QThread>
 #include <QtConcurrent/QtConcurrent>
 #include <QtMultimedia/QMediaPlayer>
+#include <QDesktopServices>
 #include "../common.hpp"
 
 namespace Ui {
@@ -29,8 +30,9 @@ signals:
     void progressChanged(int seconds);
 
 private slots:
-    void fetch_music(QModelIndex);
-    void list_music();
+    void fetch_file(QModelIndex);
+    void lookup_file(QModelIndex);
+    void list_files();
     void kill_client();
     void change_state();
     void stop_music();
@@ -43,6 +45,7 @@ private:
     server_info s_info;
     void setup_music_player(QString);
     void save_file(QString);
+    void open_file(QString);
     int download_file(QString);
     bool is_playing;
     bool is_destroyed;

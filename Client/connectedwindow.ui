@@ -23,6 +23,12 @@
       <height>431</height>
      </rect>
     </property>
+    <property name="acceptDrops">
+     <bool>true</bool>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+    </property>
    </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
