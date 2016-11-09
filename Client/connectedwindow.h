@@ -18,11 +18,11 @@
 #include "../common.hpp"
 
 namespace Ui {
-class ConnectedWindow;
+    class ConnectedWindow;
 }
 
-class ConnectedWindow : public QMainWindow
-{
+class ConnectedWindow : public QMainWindow {
+
     Q_OBJECT
 
 public:

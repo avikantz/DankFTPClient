@@ -24,7 +24,7 @@ void send_file (int sockfd) {
 	int fd = open(path, O_RDONLY);
 	char buff[BUFFER_SIZE + 1];
 
-	if(fd == -1) {
+	if (fd == -1) {
 
 		printf("File could not be opened :(.");
 		header_block head;
@@ -46,7 +46,7 @@ void send_file (int sockfd) {
 		send(sockfd, (header_block *)&head, sizeof(head), 0);
 
 		int nob;
-		while((nob = read(fd, buff, BUFFER_SIZE)) > 0) {
+		while ((nob = read(fd, buff, BUFFER_SIZE)) > 0) {
 			send(sockfd, buff, nob, 0);
 		};
 
@@ -55,7 +55,7 @@ void send_file (int sockfd) {
 	}
 }
 
-void receive_file(int sockfd) {
+void receive_file (int sockfd) {
 	char filename[NAME_SIZE];
 	recv(sockfd, filename, NAME_SIZE, 0);
 	char path[PATH_SIZE];
@@ -67,7 +67,7 @@ void receive_file(int sockfd) {
 	char buff[BUFFER_SIZE + 1];
 	int fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	
-	if(fd == -1) {
+	if (fd == -1) {
 		printf("Error in receiving...\n");
 		return;
 	}
@@ -84,7 +84,7 @@ void receive_file(int sockfd) {
 	printf("File received.\n");
 }
 
-void send_listing(int sockfd) {
+void send_listing (int sockfd) {
 	printf("Sending listing\n");
 	system("ls ./Files/ > listing.txt");
 	int fd = open("./listing.txt", O_RDONLY);
@@ -100,7 +100,8 @@ void send_listing(int sockfd) {
 }
 
 
-void handle_client(int cli_sockfd) {
+void handle_client (int cli_sockfd) {
+
 	printf("Client connected to the server...\n");
 
 	while (YES) {
@@ -145,7 +146,7 @@ int main (int argc, char *argv[]) {
 
 	int sockfd;
 	sockaddr_in_t server, client;
-	sockfd = ::socket(AF_INET, SOCK_STREAM, 0);
+	sockfd = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	server.sin_family = AF_INET;
 	server.sin_port = htons(port);
 	server.sin_addr.s_addr = INADDR_ANY;
@@ -163,8 +164,8 @@ int main (int argc, char *argv[]) {
 
 	while (YES) {
 		newsockfd = accept(sockfd, (struct sockaddr *)&client, &clen);
-		pid_t pid = fork();
-		if(pid == 0) {
+		pid_t pid;
+		if ((pid = fork()) == 0) {
 			handle_client(newsockfd);
 			close(newsockfd);
 			exit(1);

@@ -64,7 +64,7 @@ void ConnectedWindow::open_file_browser() {
 
 }
 
-void ConnectedWindow::upload_file(QString file_name) {
+void ConnectedWindow::upload_file (QString file_name) {
 
     _control ctrl;
     ctrl.command = FUPLOAD;
@@ -77,7 +77,7 @@ void ConnectedWindow::upload_file(QString file_name) {
 
     int i;
     char filename[NAME_SIZE];
-    for(i = 0; i < file_name_to_send.size(); ++i) {
+    for (i = 0; i < file_name_to_send.size(); ++i) {
         filename[i] = file_name_to_send.at(i).toLatin1();
     }
     filename[i] = '\0';
@@ -85,24 +85,24 @@ void ConnectedWindow::upload_file(QString file_name) {
     ::send(s_info.sockfd, filename, NAME_SIZE, 0);
     int nob;
     int fd = open(file_name.toStdString().c_str(), O_RDONLY);
-    if(fd != -1) {
+    if (fd != -1) {
         char buff[BUFFER_SIZE + 1];
         while ((nob = read(fd, buff, BUFFER_SIZE)) > 0) {
+            ::send(s_info.sockfd, buff, BUFFER_SIZE, 0);
             if (nob < BUFFER_SIZE) {
                 break;
             }
-            ::send(s_info.sockfd, buff, BUFFER_SIZE, 0);
         }
         char flush[10];
         ::send(s_info.sockfd, flush, 10, 0);
         qDebug() << "File uploaded :O";
-        QMessageBox::information(this, tr("DankFTP"), tr("File upload success.\nGo fish!") );
+        QMessageBox::information(this, tr("DankFTP"), tr("File upload success.\nGo fish!"));
     } else {
         qDebug() << "Unable to send :(";
-        QMessageBox::information(this, tr("DankFTP"), tr("File upload failed :(") );
+        QMessageBox::information(this, tr("DankFTP"), tr("File upload failed :("));
     }
 
-    list_files();
+//    list_files();
 }
 
 void ConnectedWindow::change_state() {
@@ -177,8 +177,8 @@ void ConnectedWindow::change_bar(int seconds) {
 	ui->statusbar->showMessage(str.append(QString::number(seconds)));
 }
 
-void ConnectedWindow::setup_music_player(QString song_name)
-{
+void ConnectedWindow::setup_music_player(QString song_name) {
+
 	player = new QMediaPlayer;
 	QString mediaPath = qApp->applicationDirPath().append("/transfers/");
 	mediaPath.append(song_name);
@@ -193,14 +193,14 @@ void ConnectedWindow::setup_music_player(QString song_name)
 	label_text.append(song_name);
 
 	ui->label_3->setText(label_text);
+
 }
 
-int ConnectedWindow::download_file(QString fname)
-{
-	// Make request
+int ConnectedWindow::download_file (QString fname) {
+
 	char file_name[NAME_SIZE];
 	int i;
-	for(i = 0; i<fname.size(); i++) {
+    for (i = 0; i < fname.size(); ++i) {
 		file_name[i] = fname.at(i).toLatin1();
 	}
 	file_name[i] = '\0';
@@ -212,7 +212,7 @@ int ConnectedWindow::download_file(QString fname)
 	send(s_info.sockfd, file_name, NAME_SIZE, 0);
 	::recv(s_info.sockfd, (header_block *)&file_head, sizeof(header_block), 0);
 
-	if(!file_head.error_code) {
+    if (!file_head.error_code) {
 		ui->progressBar->show();
 		ui->progressBar->setValue(0);
 		qDebug() << "Header received. File size: " << file_head.filesize;
@@ -240,8 +240,7 @@ int ConnectedWindow::download_file(QString fname)
 		::close(fd);
 		qDebug() << "File received!";
 		return 1;
-	}
-	else {
+    } else {
 		qDebug() << "Error";
 		return -1;
 	}
