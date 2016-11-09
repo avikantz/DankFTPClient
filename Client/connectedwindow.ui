@@ -61,7 +61,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Files on server</string>
+     <string>Select a file to preview/download. Choose/drop to upload.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -102,9 +102,9 @@
    <widget class="QPushButton" name="pauseButton">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>350</y>
-      <width>61</width>
+      <x>620</x>
+      <y>530</y>
+      <width>91</width>
       <height>27</height>
      </rect>
     </property>
@@ -115,9 +115,9 @@
    <widget class="QPushButton" name="stopButton">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>350</y>
-      <width>61</width>
+      <x>710</x>
+      <y>530</y>
+      <width>71</width>
       <height>27</height>
      </rect>
     </property>
@@ -128,9 +128,9 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>36</x>
-      <y>270</y>
-      <width>441</width>
+      <x>90</x>
+      <y>530</y>
+      <width>521</width>
       <height>20</height>
      </rect>
     </property>
@@ -163,9 +163,9 @@
    <widget class="QProgressBar" name="playedProgress">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>320</y>
-      <width>131</width>
+      <x>80</x>
+      <y>510</y>
+      <width>701</width>
       <height>31</height>
      </rect>
     </property>
@@ -179,10 +179,26 @@
    <widget class="QLabel" name="duration">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>320</y>
-      <width>67</width>
-      <height>17</height>
+      <x>20</x>
+      <y>510</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="imageLabel">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>130</y>
+      <width>221</width>
+      <height>361</height>
      </rect>
     </property>
     <property name="text">

@@ -4,6 +4,7 @@
 
 ConnectedWindow::ConnectedWindow(server_info serv, QWidget *parent) :
 	QMainWindow(parent),
+
     ui(new Ui::ConnectedWindow) {
 
 	is_playing = false;
@@ -82,9 +83,9 @@ void ConnectedWindow::open_file_browser()
 	}
 }
 
-void ConnectedWindow::change_state()
-{
-	if(is_playing) {
+void ConnectedWindow::change_state() {
+
+    if (is_playing) {
 		player->pause();
 		is_playing = false;
 		ui->pauseButton->setText("Resume");
@@ -240,11 +241,28 @@ void ConnectedWindow::open_file(QString fname) {
     QDesktopServices::openUrl(QUrl::fromLocalFile(mediaPath));
 }
 
+void ConnectedWindow::display_image(QString fname) {
+    QString mediaPath = qApp->applicationDirPath().append("/transfers/");
+    mediaPath.append(fname);
+    ui->imageLabel->setBackgroundRole(QPalette::Base);
+    ui->imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    ui->imageLabel->setScaledContents(true);
+    QPixmap image(mediaPath);
+    ui->imageLabel->setPixmap(image);
+}
+
 void ConnectedWindow::lookup_file(QModelIndex index) {
 
     if(!is_destroyed) {
         stop_music();
     }
+
+    // Preview file or something
+
+    ui->pauseButton->hide();
+    ui->stopButton->hide();
+    ui->playedProgress->hide();
+    ui->duration->hide();
 
     QString file_name = index.data().toString();
     QString message(file_name);
@@ -261,17 +279,15 @@ void ConnectedWindow::lookup_file(QModelIndex index) {
     } else {
         QString ext = file_name.right(3);
         qDebug() << "Extension: " << ext;
-        if ((QString::compare("mp3", ext) == 0) || (QString::compare("m4a", ext)) == 0) {
+        if ((QString::compare("mp3", ext) == 0) || (QString::compare("m4a", ext) == 0)) {
             // Music file
             ui->pauseButton->show();
             ui->stopButton->show();
             ui->playedProgress->show();
+            ui->duration->show();
             setup_music_player(file_name);
-        } else {
-            // Other file
-            ui->pauseButton->hide();
-            ui->stopButton->hide();
-            ui->playedProgress->hide();
+        } else if ((QString::compare("jpg", ext) == 0) || (QString::compare("png", ext) == 0) || (QString::compare("gif", ext) == 0)) {
+            display_image(file_name);
         }
     }
 }

@@ -46,6 +46,7 @@ private:
     void setup_music_player(QString);
     void save_file(QString);
     void open_file(QString);
+    void display_image(QString);
     int download_file(QString);
     bool is_playing;
     bool is_destroyed;
