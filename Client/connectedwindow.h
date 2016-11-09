@@ -7,6 +7,9 @@
 #include <QStringListModel>
 #include <QString>
 #include <QDir>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 #include <QFileDialog>
 #include <QThread>
 #include <QtConcurrent/QtConcurrent>
@@ -29,6 +32,10 @@ public:
 signals:
     void progressChanged(int seconds);
 
+protected:
+    void dropEvent(QDropEvent *ev);
+    void dragEnterEvent(QDragEnterEvent *ev);
+
 private slots:
     void fetch_file(QModelIndex);
     void lookup_file(QModelIndex);
@@ -44,6 +51,7 @@ private:
     void updatebar();
     server_info s_info;
     void setup_music_player(QString);
+    void upload_file(QString);
     void save_file(QString);
     void open_file(QString);
     void display_image(QString);

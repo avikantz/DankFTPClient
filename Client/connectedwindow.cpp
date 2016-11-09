@@ -11,9 +11,11 @@ ConnectedWindow::ConnectedWindow(server_info serv, QWidget *parent) :
 	is_destroyed = true;
 	s_info = serv;
 	ui->setupUi(this);
+
+    setAcceptDrops(true);
+
 	char address[100];
-	strcpy(address, "Connected to address: ");
-	strcat(address, inet_ntoa(s_info.serv.sin_addr));
+    snprintf(address, 100, "Connected to %s:%d", inet_ntoa(s_info.serv.sin_addr), s_info.serv.sin_port);
 	ui->label->setText(address);
 
 	// Actions
@@ -37,50 +39,70 @@ ConnectedWindow::ConnectedWindow(server_info serv, QWidget *parent) :
     list_files();
 }
 
-ConnectedWindow::~ConnectedWindow()
-{
+ConnectedWindow::~ConnectedWindow() {
     delete ui;
 }
 
-void ConnectedWindow::open_file_browser()
-{
+void ConnectedWindow::dragEnterEvent(QDragEnterEvent *event) {
+    event->acceptProposedAction();
+}
+
+void ConnectedWindow::dropEvent(QDropEvent *event) {
+    foreach (const QUrl &url, event->mimeData()->urls()) {
+        QString fileName = url.toLocalFile();
+        qDebug() << "Dropped file: " << fileName;
+        upload_file(fileName);
+    }
+}
+
+void ConnectedWindow::open_file_browser() {
+
     QString file_name = QFileDialog::getOpenFileName(this, tr("Open File"), "~");
     qDebug() << "File to upload: " << file_name;
 
-	_control ctrl;
-	ctrl.command = FUPLOAD;
-	ctrl.is_error = 0;
-	::send(s_info.sockfd, (_control *)&ctrl, sizeof(_control), 0);
+    upload_file(file_name);
 
-	int file_name_starts_at = file_name.lastIndexOf("/");
-	QString file_name_to_send = file_name.mid(file_name_starts_at + 1);
+}
+
+void ConnectedWindow::upload_file(QString file_name) {
+
+    _control ctrl;
+    ctrl.command = FUPLOAD;
+    ctrl.is_error = 0;
+    ::send(s_info.sockfd, (_control *)&ctrl, sizeof(_control), 0);
+
+    int file_name_starts_at = file_name.lastIndexOf("/");
+    QString file_name_to_send = file_name.mid(file_name_starts_at + 1);
     qDebug() << "Sending file: " << file_name_to_send;
 
-	int i;
-	char filename[NAME_SIZE];
-	for(i = 0; i<file_name_to_send.size(); i++) {
-		filename[i] = file_name_to_send.at(i).toLatin1();
-	}
-	filename[i] = '\0';
+    int i;
+    char filename[NAME_SIZE];
+    for(i = 0; i < file_name_to_send.size(); ++i) {
+        filename[i] = file_name_to_send.at(i).toLatin1();
+    }
+    filename[i] = '\0';
 
-	::send(s_info.sockfd, filename, NAME_SIZE, 0);
-	int nob;
-	int fd = open(file_name.toStdString().c_str(), O_RDONLY);
-	if(fd != -1) {
-		char buff[BUFFER_SIZE + 1];
-		while((nob = read(fd, buff, BUFFER_SIZE)) > 0) {
-			if(nob < BUFFER_SIZE) {
-				break;
-			}
-			::send(s_info.sockfd, buff, BUFFER_SIZE, 0);
-		}
-		char flush[10];
-		::send(s_info.sockfd, flush, 10, 0);
+    ::send(s_info.sockfd, filename, NAME_SIZE, 0);
+    int nob;
+    int fd = open(file_name.toStdString().c_str(), O_RDONLY);
+    if(fd != -1) {
+        char buff[BUFFER_SIZE + 1];
+        while ((nob = read(fd, buff, BUFFER_SIZE)) > 0) {
+            if (nob < BUFFER_SIZE) {
+                break;
+            }
+            ::send(s_info.sockfd, buff, BUFFER_SIZE, 0);
+        }
+        char flush[10];
+        ::send(s_info.sockfd, flush, 10, 0);
         qDebug() << "File uploaded :O";
-	}
-	else {
+        QMessageBox::information(this, tr("DankFTP"), tr("File upload success.\nGo fish!") );
+    } else {
         qDebug() << "Unable to send :(";
-	}
+        QMessageBox::information(this, tr("DankFTP"), tr("File upload failed :(") );
+    }
+
+    list_files();
 }
 
 void ConnectedWindow::change_state() {
@@ -90,12 +112,10 @@ void ConnectedWindow::change_state() {
 		is_playing = false;
 		ui->pauseButton->setText("Resume");
 		ui->statusbar->showMessage("Paused...");
-	}
-	else {
-		if(is_destroyed) {
+    } else {
+        if (is_destroyed) {
 			ui->statusbar->showMessage("Music was either stopped or not selected!");
-		}
-		else if(player) {
+        } else if(player) {
 			player->play();
 			is_playing = true;
 			ui->pauseButton->setText("Pause");
@@ -104,12 +124,12 @@ void ConnectedWindow::change_state() {
 	}
 }
 
-void ConnectedWindow::stop_music()
-{
+void ConnectedWindow::stop_music() {
+
 	if(is_destroyed) {
 		return;
 	}
-	if(player) {
+    if (player) {
 		is_destroyed = true;        
 		is_playing = false;
 		ui->label_3->setText("");
@@ -124,6 +144,7 @@ void ConnectedWindow::updatebar() {
 	qint64 ticker = 0;
 	qint64 old = 0;
 	int seconds = 0;
+
 	while(!is_destroyed) {
 		try {
 			played = player->position();
@@ -133,8 +154,7 @@ void ConnectedWindow::updatebar() {
 				seconds++;
 				emit progressChanged(seconds);
 			}
-		}
-		catch(...) {
+        } catch (...) {
 			return;
 		}
 
@@ -324,16 +344,14 @@ void ConnectedWindow::list_files() {
 	char list_data[BUFFER_SIZE];
 	int fd = open("FileList.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	int nob;
-	while((nob = ::recv(s_info.sockfd, list_data, BUFFER_SIZE, 0)) > 0) {
+
+    while ((nob = ::recv(s_info.sockfd, list_data, BUFFER_SIZE, 0)) > 0) {
 		write(fd, list_data, nob);
 		if(nob != BUFFER_SIZE)
 			break;
 	}
 
-	QString status = "Received: ";
-	status.append(QString::number(nob));
-
-	ui->statusbar->showMessage(status);
+    ui->statusbar->showMessage("Ready...");
 	::close(fd);
 
 	QStringList stringList;

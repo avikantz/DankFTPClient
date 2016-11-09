@@ -8,7 +8,7 @@ EntryWindow::EntryWindow(QWidget *parent) :
     ui(new Ui::EntryWindow) {
     ui->setupUi(this);
     connect(ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(button_handle()));
-    ui->statusBar->showMessage("Waiting for server input.");
+    ui->statusBar->showMessage("Waiting for server input...");
 }
 
 EntryWindow::~EntryWindow() {
@@ -17,13 +17,16 @@ EntryWindow::~EntryWindow() {
 
 void EntryWindow::button_handle() {
 
-    ui->statusBar->showMessage("Establishing connection...");
+    ui->statusBar->showMessage("Trying to connect...");
+
     int sockfd;
+
     struct sockaddr_in serv;
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     serv.sin_addr.s_addr = inet_addr(ui->ip_addr->text().toStdString().c_str());
     serv.sin_family = AF_INET;
     serv.sin_port = htons(ui->port_no->text().toInt());
+
     int is_connected = ::connect(sockfd, (struct sockaddr *)&serv, sizeof(serv));
 
     if(is_connected != -1) {
@@ -32,9 +35,8 @@ void EntryWindow::button_handle() {
         si.sockfd = sockfd;
         si.serv = serv;
 
-        ui->statusBar->showMessage("Connection established!");
+        ui->statusBar->showMessage("Connected!");
 
-        //If connection happens, open client window.
         popUpWindow = new ConnectedWindow(si);
         popUpWindow->show();
         popUpWindow->setWindowTitle("DankFTPClient");
@@ -43,6 +45,6 @@ void EntryWindow::button_handle() {
         this->close();
 
     } else {
-        ui->statusBar->showMessage("Connection failed. Check input!");
+        ui->statusBar->showMessage("Connection failed! Is the server running?");
     }
 }
