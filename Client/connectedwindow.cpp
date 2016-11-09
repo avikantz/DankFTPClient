@@ -225,6 +225,8 @@ void ConnectedWindow::save_file(QString fname) {
 	QString mediaPath = qApp->applicationDirPath().append("/transfers/");
 	mediaPath.append(fname);
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), mediaPath);
+    qDebug() << "Filename = " << fileName;
+    QFile::copy(mediaPath, fileName);
 }
 
 void ConnectedWindow::fetch_music(QModelIndex index)
@@ -241,13 +243,13 @@ void ConnectedWindow::fetch_music(QModelIndex index)
 	ctrl.command = REQ_FILE;
 	ctrl.is_error = 0;
 	send(s_info.sockfd, (_control *)&ctrl, sizeof(_control), 0);
-	int is_downloaded = download_song(file_name);
+    int is_downloaded = download_file(file_name);
 	if(is_downloaded == -1) {
 		QMessageBox::information(0, "Error", "Could not open file!");
 	} else {
 		QString ext = file_name.right(3);
 		qDebug() << "Extension: " << ext;
-		if (QString::compare("mp3", ext, Qt::CaseInsensitive) || QString::compare("m4a", ext, Qt::CaseInsensitive)) {
+        if ((QString::compare("mp3", ext) == 0) || (QString::compare("m4a", ext)) == 0) {
 			qDebug() << "Playing audio file...";
 			setup_music_player(file_name);
 		} else {

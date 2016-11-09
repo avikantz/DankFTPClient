@@ -42,7 +42,8 @@ private:
     void updatebar();
     server_info s_info;
     void setup_music_player(QString);
-    int download_song(QString);
+    void save_file(QString);
+    int download_file(QString);
     bool is_playing;
     bool is_destroyed;
     QMediaPlayer *player;
