@@ -6,9 +6,26 @@
 
 #include "../common.hpp"
 
+char* encrypt_buffer (char *buffer, int nob) {
+	int i;
+	char *nb = (char *)calloc(BUFFER_SIZE + 1, sizeof(char));
+	for (i = 0; i < nob; ++i) {
+		nb[i] = (buffer[i] + (i % 8)) % 256;
+	}
+	return nb;
+}
+
+char* decrypt_buffer (char *buffer, int nob) {
+	int i;
+	char *nb = (char *)calloc(BUFFER_SIZE + 1, sizeof(char));
+	for (i = 0; i < nob; ++i) {
+		nb[i] = (buffer[i] - (i % 8)) % 256;
+	}
+	return nb;
+}
+
 void send_file (int sockfd) {
 
-	// printf("Client requested file: \n");
 	char s_name[NAME_SIZE];
 	int bytes = recv(sockfd, s_name, NAME_SIZE, 0);
 	char path[PATH_SIZE];
@@ -47,7 +64,8 @@ void send_file (int sockfd) {
 
 		int nob;
 		while ((nob = read(fd, buff, BUFFER_SIZE)) > 0) {
-			send(sockfd, buff, nob, 0);
+			char *nb = encrypt_buffer(buff, nob);
+			send(sockfd, nb, nob, 0);
 		};
 
 		printf("Transferred!\n");
@@ -72,8 +90,9 @@ void receive_file (int sockfd) {
 		return;
 	}
 	int nob;
-	while((nob = recv(sockfd, buff, BUFFER_SIZE, 0)) > 0) {
-		write(fd, buff, nob);
+	while ((nob = recv(sockfd, buff, BUFFER_SIZE, 0)) > 0) {
+		char *nb = decrypt_buffer(buff, nob);
+		write(fd, nb, nob);
 		if(nob < BUFFER_SIZE){
 			printf("Done\n");
 			break;
@@ -94,7 +113,7 @@ void send_listing (int sockfd) {
 	}
 	char buff[BUFFER_SIZE + 1];
 	int nob;
-	while((nob = read(fd, buff, BUFFER_SIZE)) > 0) {
+	while ((nob = read(fd, buff, BUFFER_SIZE)) > 0) {
 		send(sockfd, buff, nob, 0);
 	}
 }

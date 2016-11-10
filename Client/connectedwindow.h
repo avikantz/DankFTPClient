@@ -44,6 +44,8 @@ private slots:
     void change_state();
     void stop_music();
     void open_file_browser();
+    void save_prompt();
+    void open_action();
     void change_bar(int);
 
 private:

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>666</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,9 @@
    <widget class="QListView" name="listView">
     <property name="geometry">
      <rect>
-      <x>255</x>
+      <x>335</x>
       <y>70</y>
-      <width>521</width>
+      <width>441</width>
       <height>431</height>
      </rect>
     </property>
@@ -40,7 +40,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Connected to server:</string>
+     <string>Connected to </string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -49,9 +49,9 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>340</x>
       <y>40</y>
-      <width>441</width>
+      <width>401</width>
       <height>20</height>
      </rect>
     </property>
@@ -64,15 +64,15 @@
      <string>Select a file to preview/download. Choose/drop to upload.</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignCenter</set>
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="refreshButton">
     <property name="geometry">
      <rect>
-      <x>700</x>
+      <x>750</x>
       <y>40</y>
-      <width>71</width>
+      <width>21</width>
       <height>22</height>
      </rect>
     </property>
@@ -83,16 +83,29 @@
      </font>
     </property>
     <property name="text">
-     <string>Refresh</string>
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="resources.qrc">
+      <normaloff>:/refresh.png</normaloff>:/refresh.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QProgressBar" name="progressBar">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>510</y>
+      <y>520</y>
       <width>761</width>
-      <height>23</height>
+      <height>16</height>
      </rect>
     </property>
     <property name="value">
@@ -103,7 +116,7 @@
     <property name="geometry">
      <rect>
       <x>620</x>
-      <y>530</y>
+      <y>580</y>
       <width>91</width>
       <height>27</height>
      </rect>
@@ -116,7 +129,7 @@
     <property name="geometry">
      <rect>
       <x>710</x>
-      <y>530</y>
+      <y>580</y>
       <width>71</width>
       <height>27</height>
      </rect>
@@ -129,7 +142,7 @@
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>530</y>
+      <y>580</y>
       <width>521</width>
       <height>20</height>
      </rect>
@@ -150,23 +163,36 @@
    <widget class="QPushButton" name="uploadButton">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>20</x>
       <y>30</y>
-      <width>113</width>
+      <width>90</width>
       <height>32</height>
      </rect>
     </property>
     <property name="text">
      <string>Upload</string>
     </property>
+    <property name="icon">
+     <iconset resource="resources.qrc">
+      <normaloff>:/upload.png</normaloff>:/upload.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QProgressBar" name="playedProgress">
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>510</y>
+      <y>551</y>
       <width>701</width>
-      <height>31</height>
+      <height>20</height>
      </rect>
     </property>
     <property name="value">
@@ -180,9 +206,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>510</y>
+      <y>551</y>
       <width>51</width>
-      <height>31</height>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
@@ -195,14 +221,75 @@
    <widget class="QLabel" name="imageLabel">
     <property name="geometry">
      <rect>
-      <x>19</x>
-      <y>130</y>
-      <width>221</width>
-      <height>361</height>
+      <x>20</x>
+      <y>150</y>
+      <width>301</width>
+      <height>341</height>
      </rect>
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignHCenter|Qt::AlignTop</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="downloadButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>70</y>
+      <width>110</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Download</string>
+    </property>
+    <property name="icon">
+     <iconset resource="resources.qrc">
+      <normaloff>:/download.png</normaloff>:/download.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="openButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>110</y>
+      <width>80</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Open</string>
+    </property>
+    <property name="icon">
+     <iconset resource="resources.qrc">
+      <normaloff>:/open.png</normaloff>:/open.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+O</string>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -248,6 +335,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

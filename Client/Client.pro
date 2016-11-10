@@ -23,3 +23,6 @@ HEADERS  += entrywindow.h \
 
 FORMS    += entrywindow.ui \
     connectedwindow.ui
+
+RESOURCES += \
+    resources.qrc

@@ -20,11 +20,33 @@
       <x>150</x>
       <y>160</y>
       <width>261</width>
-      <height>41</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">
      <string>Connect!</string>
+    </property>
+    <property name="icon">
+     <iconset resource="resources.qrc">
+      <normaloff>:/connect.png</normaloff>:/connect.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>32</width>
+      <height>32</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+Return</string>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
+    <property name="default">
+     <bool>false</bool>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QLineEdit" name="ip_addr">
@@ -39,14 +61,11 @@
     <property name="cursor">
      <cursorShape>IBeamCursor</cursorShape>
     </property>
-    <property name="inputMask">
-     <string>000.000.000.000</string>
-    </property>
     <property name="text">
-     <string>127.0.0.1</string>
+     <string/>
     </property>
     <property name="maxLength">
-     <number>15</number>
+     <number>32767</number>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -132,13 +151,48 @@
     <property name="geometry">
      <rect>
       <x>330</x>
-      <y>280</y>
+      <y>229</y>
       <width>201</width>
-      <height>20</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Networks Lab Project B2 42 &amp; 43</string>
+     <string>Computer Networks Lab Project</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>250</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Sayantan Saha (42)</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>270</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Avikant Saini (43)</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
   </widget>
@@ -283,6 +337,8 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
