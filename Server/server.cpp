@@ -43,7 +43,7 @@ void send_file (int sockfd) {
 
 	if (fd == -1) {
 
-		printf("File could not be opened :(.");
+		printf("File could not be opened :(.\n");
 		header_block head;
 		head.error_code = 1;
 

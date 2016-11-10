@@ -8,9 +8,10 @@
 #include <fcntl.h>
 #include <netdb.h>
 
-#define BUFFER_SIZE 4096
-#define NAME_SIZE 100
-#define PATH_SIZE 128
+#define BUFFER_SIZE 4095
+#define NAME_SIZE 256
+#define PATH_SIZE 256
+
 #define REQ_FILE 1
 #define REQ_LIST 2
 #define FUPLOAD 3

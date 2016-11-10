@@ -120,12 +120,12 @@ void ConnectedWindow::upload_file (QString file_name) {
         ::send(s_info.sockfd, flush, 10, 0);
         qDebug() << "File uploaded :O";
         QMessageBox::information(this, tr("DankFTP"), tr("File upload success.\nGo fish!"));
+        list_files();
     } else {
         qDebug() << "Unable to send :(";
         QMessageBox::information(this, tr("DankFTP"), tr("File upload failed :("));
     }
 
-    list_files();
 }
 
 int fileExists (const char *filename) {
@@ -169,7 +169,7 @@ int ConnectedWindow::download_file (QString fname) {
         int received = 0;
         int percentage;
         int limit = 10;
-        while((nob = ::recv(s_info.sockfd, buff, BUFFER_SIZE, 0)) > 0) {
+        while ((nob = ::recv(s_info.sockfd, buff, BUFFER_SIZE, 0)) > 0) {
             char *nb = decrypt_buffer(buff, nob);
             write(fd, nb, nob);
             received += nob;
